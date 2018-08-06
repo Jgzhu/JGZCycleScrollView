@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
-@interface JGZCycleScrollViewModel : UICollectionViewFlowLayout
+typedef NS_ENUM(NSUInteger, ModelType) {
+    ModelLocalImage,
+    ModelNetImage,
+    ModelVideo
+};
 
+@interface JGZCycleScrollViewModel : UICollectionViewFlowLayout
+@property (nonatomic,assign)ModelType type;
+@property (nonatomic,copy)NSString *ImageName;
+@property (nonatomic,copy)NSString *ImageUrlString;
+@property (nonatomic,assign) CGFloat imgCornerRadius;
+@property (nonatomic,copy)NSString *VideoUrlString;
 @end
