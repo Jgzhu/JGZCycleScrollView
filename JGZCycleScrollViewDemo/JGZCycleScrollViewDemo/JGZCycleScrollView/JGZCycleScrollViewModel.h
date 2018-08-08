@@ -19,5 +19,8 @@ typedef NS_ENUM(NSUInteger, ModelType) {
 @property (nonatomic,copy)NSString *ImageName;
 @property (nonatomic,copy)NSString *ImageUrlString;
 @property (nonatomic,assign) CGFloat imgCornerRadius;
-@property (nonatomic,copy)NSString *VideoUrlString;
+@property (nonatomic,strong)NSURL *VideoUrl;
+@property (nonatomic,assign)NSInteger CurrentTime;
+
+@property (nonatomic,assign)NSInteger indexInteger;
 @end

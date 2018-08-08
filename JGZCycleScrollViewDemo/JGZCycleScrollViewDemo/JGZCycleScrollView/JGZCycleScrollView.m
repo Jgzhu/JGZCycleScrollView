@@ -11,14 +11,14 @@
 #import "JGZCycleScrollViewModel.h"
 #import "JGZCycleScrollViewCell.h"
 #define kScreenWidth  [UIScreen mainScreen].bounds.size.width
-@interface JGZCycleScrollView ()<UICollectionViewDataSource,UICollectionViewDelegate>
+@interface JGZCycleScrollView ()<UICollectionViewDataSource,UICollectionViewDelegate,UIScrollViewDelegate>
 @property (nonatomic,strong) UICollectionView *collectionView;
 @property (nonatomic,strong) JGZCycleScrollViewFlowLayout *flowLayout;
 @property (nonatomic,strong) UIImageView *backgroundImageView;
 @property (nonatomic,strong) NSArray *ModelArray;//图片数组
 @property (nonatomic,assign) NSInteger totalItems;//item总数
 @property (nonatomic,strong) NSTimer *timer;
-@property (nonatomic,assign) NSUInteger currentpage;//当前页
+
 @end
 
 static NSString *const cellID = @"cellID";
@@ -80,9 +80,13 @@ static NSString *const cellID = @"cellID";
         [self initialization];
         [self addSubview:self.collectionView];
         [self addSubview:self.pageControl];
+        
     }
     return self;
 }
+
+
+
 -(void)initialization
 {
     //初始化
@@ -103,7 +107,7 @@ static NSString *const cellID = @"cellID";
 -(void)layoutSubviews
 {
     [super layoutSubviews];
-    
+   
     self.collectionView.frame = self.bounds;
     self.pageControl.frame = CGRectMake(0, self.bounds.size.height - 30, self.bounds.size.width, 30);
     self.flowLayout.itemSize = CGSizeMake(_itemWidth, self.bounds.size.height);
@@ -139,10 +143,14 @@ static NSString *const cellID = @"cellID";
     self.collectionView.userInteractionEnabled = NO;
     if (!self.ModelArray.count) return; // 解决清除timer时偶尔会出现的问题
     self.pageControl.currentPage = [self currentIndex] % self.ModelArray.count;
+   
+     self.indecue = [self currentIndex];
+   
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
+   
     _oldPoint = scrollView.contentOffset.x;
     if (self.autoScroll) {
         [self invalidateTimer];
@@ -163,10 +171,21 @@ static NSString *const cellID = @"cellID";
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
+   
+     NSLog(@"%ld",(long) [self currentIndex]);
+      self.indecue = [self currentIndex];
+   // [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%ld",(long)self.indecue] object:[NSNumber numberWithInteger:self.indecue]];
     self.collectionView.userInteractionEnabled = YES;
     if (!self.ModelArray.count) return; // 解决清除timer时偶尔会出现的问题
 }
 
+/* JGZCycleScrollViewCell *cell=(JGZCycleScrollViewCell *)[self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:self.pageControl.currentPage inSection:0]];
+ 
+ if (cell.model.type==ModelVideo) {
+ cell.IsStart=YES;
+ }else{
+ cell.IsStart=NO;
+ }*/
 //手离开屏幕的时候
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset{
     if(!self.infiniteLoop) return;//如果不是无限轮播，则返回
@@ -207,26 +226,40 @@ static NSString *const cellID = @"cellID";
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     JGZCycleScrollViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellID forIndexPath:indexPath];
+   
     long itemIndex = (int) indexPath.item % self.ModelArray.count;
     JGZCycleScrollViewModel *model=self.ModelArray[itemIndex];
-    cell.model=model;
-//    NSString *imagePath = self.ModelArray[itemIndex];
-//
-//    if ([imagePath hasPrefix:@"http"]) {
-//        [cell.imageView sd_setImageWithURL:[NSURL URLWithString:imagePath] placeholderImage:self.cellPlaceholderImage];
-//    } else {
-//        UIImage *image = [UIImage imageNamed:imagePath];
-//        if (!image) {
-//            [UIImage imageWithContentsOfFile:imagePath];
-//        }
-//        cell.imageView.image = image;
-//    }
     cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
     cell.imageView.clipsToBounds=YES;
     cell.imgCornerRadius=self.imgCornerRadius;
+    cell.model=model;
     return cell;
 }
+//-(void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
+//    for (JGZCycleScrollViewCell *Cell1 in  self.collectionView.visibleCells) {
+//        if (Cell1.model.type==ModelVideo) {
+//            if (Cell1==cell) {
+//                Cell1.IsStart=YES;
+//            }else{
+//               Cell1.IsStart=NO;
+//            }
+//            
+//        }
+//    }
+//    JGZCycleScrollViewCell *ScrollViewCell=(JGZCycleScrollViewCell *)cell;
+//    if (ScrollViewCell.model.type==ModelVideo) {
+//        ScrollViewCell.IsStart=YES;
+//    }
+//
+//}
+//-(void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath{
+//    JGZCycleScrollViewCell *ScrollViewCell=(JGZCycleScrollViewCell*)cell;
+//     if (ScrollViewCell.model.type==ModelVideo) {
+//    ScrollViewCell.IsStart=NO;
+//     }
+//}
 #pragma mark  - 代理方法
+
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self.delegate respondsToSelector:@selector(cycleScrollView:didSelectItemAtIndex:)]) {
@@ -358,5 +391,4 @@ static NSString *const cellID = @"cellID";
     }
     
 }
-
 @end

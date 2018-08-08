@@ -7,11 +7,12 @@
 //
 
 #import "JGZCycleScrollViewFlowLayout.h"
-
+#import "JGZCycleScrollViewCell.h"
+#import "JGZCycleScrollView.h"
 @implementation JGZCycleScrollViewFlowLayout
 - (NSArray<UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect {
     // 1.获取cell对应的attributes对象
-    NSArray* arrayAttrs = [[NSArray alloc] initWithArray:[super layoutAttributesForElementsInRect:rect] copyItems:YES];
+    NSArray* arrayAttrs = [[NSArray alloc] initWithArray:[super layoutAttributesForElementsInRect:rect] copyItems:NO];
     //    NSArray *arrayAttrs = [super layoutAttributesForElementsInRect:rect];
     
     if(!self.isZoom) return arrayAttrs;
@@ -28,6 +29,32 @@
         // 3.2 距离越大，缩放比越小，距离越小，缩放比越大
         CGFloat factor = 0.001;
         CGFloat scale = 1 / (1 + distance * factor);
+        //NSLog(@"%f",scale);
+        JGZCycleScrollViewCell *cell=  (JGZCycleScrollViewCell *) [self.collectionView cellForItemAtIndexPath:attr.indexPath];
+        
+        //CGRect cellFrame=[cell.imageView convertRect:cell.imageView.frame toView:[UIApplication sharedApplication].keyWindow];
+//        NSLog(@"%@",cellFrame);
+        if (scale==1) {
+
+            if (cell.model.type==ModelVideo) {
+
+                cell.IsStart=YES;
+            }
+            else{
+              cell.IsStart=NO;
+            }
+
+        }
+        else{
+            if (cell.model.type==ModelVideo) {
+//                if (distance<self.collectionView.bounds.size.width * 0.5) {
+//                    cell.IsStart=YES;
+//                }else{
+                cell.IsStart=NO;
+               // }
+            }
+        }
+     
         attr.transform = CGAffineTransformMakeScale(scale, scale);
     }
     return arrayAttrs;
@@ -39,8 +66,13 @@
  *  1.layoutAttributesForElementsInRect：方法
  *  2.preparelayout方法
  */
-
+//- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath{
+//    
+//     JGZCycleScrollViewCell *cell=  (JGZCycleScrollViewCell *) [self.collectionView cellForItemAtIndexPath:indexPath];
+//    return nil;
+//}
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
     return true;
 }
+
 @end

@@ -15,7 +15,8 @@
 @end
 
 @interface JGZCycleScrollView : UIView
-
+@property (nonatomic,assign) NSUInteger indecue;//当前页
+@property (nonatomic,assign) NSUInteger currentpage;//当前页
 /**是否无线循环，默认yes  如果设置成NO，则需要自己设置collectionView的pagingEnabled属性*/
 @property (nonatomic,assign) BOOL infiniteLoop;
 //*是否自动滑动，默认yes

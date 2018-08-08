@@ -8,8 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "JGZCycleScrollViewModel.h"
+#import "JGZCycleScrollView.h"
 @interface JGZCycleScrollViewCell : UICollectionViewCell
 @property (nonatomic,strong) UIImageView *imageView;
 @property (nonatomic,assign) CGFloat imgCornerRadius;
 @property (nonatomic,strong)JGZCycleScrollViewModel *model;
+@property (nonatomic)BOOL IsStart;
 @end
